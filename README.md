@@ -1,3 +1,3 @@
-Write game over function
-Show/track highest scores
-select difficulty
+Memory game from the Odin Project React curriculum. 
+## Features to come
+- Select difficulty

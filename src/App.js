@@ -1,12 +1,20 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { nanoid } from 'nanoid';
 import iconData from './iconData';
+import Card from './Components/Card';
 
 
 export default function App() {
     const [icons, setIcons] = useState(fetchIcons());
-    const [score, setScore] = useState(0);
+    const [currentScore, setCurrentScore] = useState(0);
+    const [highScore, setHighScore] = useState(0);
     const [wincon, setWincon] = useState(false);
+
+    useEffect(() => {
+        if (highScore < currentScore) {
+            setHighScore(prev => prev + 1);
+        }
+    }, [currentScore]);
 
     function fetchIcons() {
         return iconData.map(icon => (
@@ -18,9 +26,14 @@ export default function App() {
         ));
     }
 
-    function handleClick(id) {
+    const handleClick = id => {
         const thisIcon = icons.find(icon => icon.id === id);
-        thisIcon.clicked ? console.log('game over') : playRound(id);
+        thisIcon.clicked ? gameOver() : playRound(id);
+    }
+
+    const gameOver = () => {
+        setIcons(fetchIcons());
+        setCurrentScore(0);
     }
 
     const playRound = (id) => {
@@ -34,12 +47,8 @@ export default function App() {
             return shuffleArr(prev);
         });
 
-        setScore(prev => prev + 1);
+        setCurrentScore(prev => (prev + 1));
     }
-
-    /* const shuffleArr = (arr) => {
-        return [...arr].sort(() => Math.random() - 0.5);
-    } */
 
     const shuffleArr = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
@@ -51,11 +60,10 @@ export default function App() {
 
     const iconList = icons.map(icon => {
         return (
-            <img 
-                className="card" 
+            <Card 
                 src={icon.url}
                 key={icon.id}
-                onClick={() => handleClick(icon.id)} 
+                onClick={() => handleClick(icon.id)}
             />
         )
     });
@@ -64,7 +72,8 @@ export default function App() {
         <main>
             <h1>Final Fantasy IV Memory Game</h1>
             <p>Select every icon once without picking the same one twice</p>
-            <p>Highest Score: {score}</p>
+            <p>Current Score: {currentScore}</p>
+            <p>High Score: {highScore}</p>
             <div className="card-container">
                 {iconList}
             </div>
